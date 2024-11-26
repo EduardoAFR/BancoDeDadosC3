@@ -16,6 +16,7 @@ class LivroController:
 
     @staticmethod
     def deletar_livro(id_livro):
-        if Livro.deletar_livro(id_livro):
-            return 1  # Indica que foi deletado
-        return 0  # Indica que não foi deletado
+            resultado = Livro.deletar_livro(id_livro)
+            if resultado["sucesso"]:
+                return {"sucesso": True, "mensagem": resultado["mensagem"]}
+            return {"sucesso": False, "mensagem": resultado["mensagem"]}
