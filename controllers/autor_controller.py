@@ -1,6 +1,4 @@
-# controllers/autor_controller.py
 from models.autor import Autor
-from bson.objectid import ObjectId
 
 class AutorController:
     @staticmethod
@@ -8,13 +6,15 @@ class AutorController:
         return Autor.listar_autores()
 
     @staticmethod
-    def criar_autor(nome, nacionalidade, data_nascimento):
-        return Autor.criar_autor(nome, nacionalidade, data_nascimento)
+    def criar_autor(id_autor,nome):
+        return Autor.criar_autor(id_autor,nome)
 
     @staticmethod
-    def atualizar_autor(id_autor, novos_dados):
-        return Autor.atualizar_autor(ObjectId(id_autor), novos_dados)
+    def atualizar_autor(id_autor, nome):
+        return Autor.atualizar_autor(id_autor, nome)
 
     @staticmethod
     def deletar_autor(id_autor):
-        return Autor.deletar_autor(ObjectId(id_autor))
+        if Autor.deletar_autor(id_autor):
+            return 1  # Indica que foi deletado
+        return 0  # Indica que não foi deletado
