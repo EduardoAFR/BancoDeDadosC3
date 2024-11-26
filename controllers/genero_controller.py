@@ -1,6 +1,4 @@
-# controllers/genero_controller.py
 from models.genero import Genero
-from bson.objectid import ObjectId
 
 class GeneroController:
     @staticmethod
@@ -8,13 +6,15 @@ class GeneroController:
         return Genero.listar_generos()
 
     @staticmethod
-    def criar_genero(nome):
-        return Genero.criar_genero(nome)
+    def criar_genero(id_genero,nome):
+        return Genero.criar_genero(id_genero,nome)
 
     @staticmethod
-    def atualizar_genero(id_genero, novos_dados):
-        return Genero.atualizar_genero(ObjectId(id_genero), novos_dados)
-
+    def atualizar_genero(id_genero, nome):
+        return Genero.atualizar_genero(id_genero, nome)
+   
     @staticmethod
     def deletar_genero(id_genero):
-        return Genero.deletar_genero(ObjectId(id_genero))
+        if Genero.deletar_genero(id_genero):
+            return 1  # Indica que foi deletado
+        return 0  # Indica que não foi deletado
