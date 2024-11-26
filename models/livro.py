@@ -84,4 +84,4 @@ class Livro:
         if resultado.deleted_count > 0:
             return {"sucesso": True, "mensagem": "Livro excluído com sucesso."}
         else:
-            return {"sucesso": False, "mensagem": "Livro ao tentar excluir o pedido."}
+            return {"sucesso": False, "mensagem": "Erro ao tentar excluir o livro."}
