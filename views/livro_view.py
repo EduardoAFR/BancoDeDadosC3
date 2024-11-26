@@ -57,9 +57,6 @@ def atualizar_livro():
     else:
         print(f"Nenhum livro encontrado com o ID {id_livro}.")
 
-
-# main.py ou onde o menu de livros está implementado
-
 def deletar_livro():
     while True:
         # Listando todos os livros
