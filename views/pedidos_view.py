@@ -1,33 +1,112 @@
-# views/pedidos_view.py
 from controllers.pedidos_controller import PedidoController
 
-def exibir_pedidos():
+def listar_pedidos():
     pedidos = PedidoController.listar_pedidos()
     for pedido in pedidos:
-        print(f"Cliente: {pedido['cliente']}, Livros: {pedido['livros']}, Total: {pedido['total']}")
+        print(f"Id:{pedido['id_pedido']}, Livro: {pedido['livro']}, Quantidade: {pedido['quantidade']}, Data do Pedido: {pedido['data_pedido']}")
 
-def adicionar_pedido():
-    cliente = input("Digite o nome do cliente: ")
-    livros = input("Digite a lista de livros (separados por vírgula): ").split(",")
-    total = float(input("Digite o valor total: "))
-    pedido_id = PedidoController.criar_pedido(cliente, livros, total)
-    print(f"Pedido adicionado com ID: {pedido_id}")
+    if not pedidos:
+        print("Não há pedidos cadastrados.")
+        return
+
+def criar_pedido():
+    id_pedido = input("Digite o ID do pedido: ")
+    livro_id = input("Digite o ID do livro: ")
+    quantidade = int(input("Digite a quantidade do livro: "))
+    data_pedido = input("Digite a data do pedido (formato YYYY-MM-DD): ")
+    
+    if not data_pedido:
+        resultado = PedidoController.criar_pedido(id_pedido, livro_id, quantidade)
+    else:
+        resultado = PedidoController.criar_pedido(id_pedido, livro_id, quantidade, data_pedido)
+    print(f"Pedido adicionado com ID: {id_pedido}")
+
+    if resultado["sucesso"]:
+        print(resultado["mensagem"])
+    else:
+        print(f"Erro: {resultado['mensagem']}")
 
 def atualizar_pedido():
+
+ # Obtém a lista de pedidos para exibir ao usuário
+    pedidos = PedidoController.listar_pedidos()
+
+    if not pedidos:
+        print("Não há pedidos cadastrados.")
+        return
+
+    # Listando os pedidos para o usuário escolher
+    print("\nLista de Pedidos:")
+    for i, pedido in enumerate(pedidos, 1):
+        print(f"{i}. ID: {pedido['id_pedido']}, Livro: {pedido['livro']}, "
+              f"Quantidade: {pedido['quantidade']}, Data do Pedido: {pedido['data_pedido']}")
+
+    # Solicita os dados do usuário
     id_pedido = input("Digite o ID do pedido que deseja atualizar: ")
-    cliente = input("Digite o novo nome do cliente (ou deixe em branco): ")
-    livros = input("Digite a nova lista de livros (ou deixe em branco): ").split(",")
-    total = input("Digite o novo valor total (ou deixe em branco): ")
+    livro_id = input("Digite o novo ID do livro (ou deixe em branco para manter o atual): ")
+    quantidade = input("Digite a nova quantidade (ou deixe em branco para manter a atual): ")
+    data_pedido = input("Digite a nova data do pedido (ou deixe em branco para manter a atual): ")
 
-    novos_dados = {}
-    if cliente: novos_dados["cliente"] = cliente
-    if livros: novos_dados["livros"] = livros
-    if total: novos_dados["total"] = float(total)
+    # Validação básica para evitar que todos os campos sejam deixados em branco
+    if not livro_id.strip() and not quantidade.strip() and not data_pedido.strip():
+        print("Nenhum dado para atualizar foi fornecido.")
+        return
 
-    atualizados = PedidoController.atualizar_pedido(id_pedido, novos_dados)
-    print(f"{atualizados} registro(s) atualizado(s).")
+    # Chamando a controller
+    atualizados = PedidoController.atualizar_pedido(id_pedido, livro_id, quantidade, data_pedido)
+
+    # Feedback ao usuário
+    if atualizados:
+        print(f"Pedido com ID {id_pedido} atualizado com sucesso.")
+    else:
+        print(f"Nenhum pedido encontrado com o ID {id_pedido}.")
+
 
 def deletar_pedido():
-    id_pedido = input("Digite o ID do pedido que deseja deletar: ")
-    deletados = PedidoController.deletar_pedido(id_pedido)
-    print(f"{deletados} registro(s) deletado(s).")
+    while True:
+        # Exibindo todos os pedidos
+        pedidos = PedidoController.listar_pedidos()
+        if not pedidos:
+            print("Não há pedidos para excluir.")
+            return  # Se não houver pedidos, retorna ao menu anterior
+
+        # Listando os pedidos para o usuário escolher
+        print("\nLista de Pedidos:")
+        for i, pedido in enumerate(pedidos, 1):
+            print(f"{i}. ID: {pedido['id_pedido']}, Livro: {pedido['livro']}, Quantidade: {pedido['quantidade']}, Data: {pedido['data_pedido']}")
+
+        try:
+            # Seleção do pedido a ser deletado
+            opcao = int(input("\nEscolha o número do pedido que deseja excluir: ")) - 1
+            pedido = pedidos[opcao]
+            print(f"\nVocê selecionou o pedido:\nID: {pedido['id_pedido']}, Livro: {pedido['livro']}, Quantidade: {pedido['quantidade']}, Data: {pedido['data_pedido']}")
+
+            # Confirmando exclusão
+            confirmacao = input("\nDeseja realmente excluir este pedido? (Sim/Não): ").strip().lower()
+            if confirmacao != 'sim':
+                print("Pedido não excluído. Retornando ao menu.")
+                return  # Sai se não houver confirmação
+
+            # Chamar exclusão diretamente na model
+            excluido = PedidoController.deletar_pedido(pedido["id_pedido"])
+            
+            if excluido["sucesso"]:
+                print(f"Pedido ID {pedido['id_pedido']} excluído com sucesso!")
+            else:
+                print(f"Erro ao tentar excluir o pedido: {excluido['mensagem']}")
+
+            # Perguntar se deseja excluir outro pedido
+            excluir_mais = input("\nDeseja excluir mais algum pedido? (Sim/Não): ").strip().lower()
+            if excluir_mais != 'sim':
+                print("Voltando ao menu principal.")
+                return
+        except (ValueError, IndexError):
+            print("Opção inválida. Tente novamente.")
+            # Perguntar se deseja excluir outro pedido
+            excluir_mais = input("\nDeseja excluir mais algum pedido? (Sim/Não): ").strip().lower()
+            if excluir_mais != 'sim':
+                print("Voltando ao menu principal.")
+                return
+        except (ValueError, IndexError):
+            print("Opção inválida. Tente novamente.")
+
