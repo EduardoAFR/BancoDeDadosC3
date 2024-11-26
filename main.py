@@ -1,8 +1,42 @@
-from controllers.livro_controller import LivroController
-from controllers.autor_controller import AutorController
-from controllers.genero_controller import GeneroController
-from controllers.pedidos_controller import PedidosController
+from views import autor_view, genero_view, livro_view, pedidos_view
 from relatorios.relatorio import relatorio_todos_autores_com_pedidos, relatorio_pedidos_por_genero
+from connection.connection import conectar
+from connection.connection import initialize_database
+
+def splash_screen():
+    """
+    Exibe a tela de boas-vindas (Splash Screen) com o nome da aplicação,
+    os componentes do grupo e o total de registros em cada coleção.
+    """
+    print("#" * 40)
+    print("#" * 7 + " SISTEMA DE GERENCIAMENTO " + "#" * 7)
+    print("#" * 40)
+    print("# TOTAL DE REGISTROS EXISTENTES #")
+
+    # Conecta ao banco de dados
+    db = conectar()
+
+    # Conta o número de documentos em cada coleção
+    autores_count = db["autores"].count_documents({})
+    livros_count = db["livros"].count_documents({})
+    generos_count = db["generos"].count_documents({})
+    pedidos_count = db["pedidos"].count_documents({})
+
+    # Exibe os totais
+    print(f"1 - AUTORES: {autores_count}")
+    print(f"2 - LIVROS: {livros_count}")
+    print(f"3 - GENEROS: {generos_count}")
+    print(f"4 - PEDIDOS: {pedidos_count}")
+
+    # Informações adicionais
+    print("\n# CRIADO POR: Eduardo Rodrigues #")
+    print("# Emanuel #")
+    print("# Devandro #")
+    print("\n# DISCIPLINA: BANCO DE DADOS #")
+    print("# 2024/2 #")
+    print("# PROFESSOR: HOWARD ROATTI #")
+    print("#" * 40)
+
 
 def exibir_menu_principal():
     while True:
@@ -33,7 +67,6 @@ def exibir_menu_principal():
             print("Opção inválida. Tente novamente.")
 
 def exibir_menu_livros():
-    livro_controller = LivroController()
 
     while True:
         print("\nMenu de Livros:")
@@ -46,20 +79,19 @@ def exibir_menu_livros():
         opcao = input("Escolha uma opção: ")
 
         if opcao == "1":
-            livro_controller.listar_livros()
+            livro_view.listar_livros()
         elif opcao == "2":
-            livro_controller.adicionar_livro()
+            livro_view.criar_livro()
         elif opcao == "3":
-            livro_controller.atualizar_livro()
+            livro_view.atualizar_livro()
         elif opcao == "4":
-            livro_controller.deletar_livro()
+            livro_view.deletar_livro()
         elif opcao == "5":
             break
         else:
             print("Opção inválida. Tente novamente.")
 
 def exibir_menu_autores():
-    autor_controller = AutorController()
 
     while True:
         print("\nMenu de Autores:")
@@ -72,20 +104,19 @@ def exibir_menu_autores():
         opcao = input("Escolha uma opção: ")
 
         if opcao == "1":
-            autor_controller.listar_autores()
+            autor_view.listar_autores()
         elif opcao == "2":
-            autor_controller.adicionar_autor()
+            autor_view.criar_autor()
         elif opcao == "3":
-            autor_controller.atualizar_autor()
+            autor_view.atualizar_autor()
         elif opcao == "4":
-            autor_controller.deletar_autor()
+            autor_view.deletar_autor()
         elif opcao == "5":
             break
         else:
             print("Opção inválida. Tente novamente.")
 
 def exibir_menu_generos():
-    genero_controller = GeneroController()
 
     while True:
         print("\nMenu de Gêneros:")
@@ -98,20 +129,19 @@ def exibir_menu_generos():
         opcao = input("Escolha uma opção: ")
 
         if opcao == "1":
-            genero_controller.listar_generos()
+            genero_view.listar_generos()
         elif opcao == "2":
-            genero_controller.adicionar_genero()
+            genero_view.criar_genero()
         elif opcao == "3":
-            genero_controller.atualizar_genero()
+            genero_view.atualizar_genero()
         elif opcao == "4":
-            genero_controller.deletar_genero()
+            genero_view.deletar_genero()
         elif opcao == "5":
             break
         else:
             print("Opção inválida. Tente novamente.")
 
 def exibir_menu_pedidos():
-    pedidos_controller = PedidosController()
 
     while True:
         print("\nMenu de Pedidos:")
@@ -124,13 +154,13 @@ def exibir_menu_pedidos():
         opcao = input("Escolha uma opção: ")
 
         if opcao == "1":
-            pedidos_controller.listar_pedidos()
+            pedidos_view.listar_pedidos()
         elif opcao == "2":
-            pedidos_controller.adicionar_pedido()
+            pedidos_view.criar_pedido()
         elif opcao == "3":
-            pedidos_controller.atualizar_pedido()
+            pedidos_view.atualizar_pedido()
         elif opcao == "4":
-            pedidos_controller.deletar_pedido()
+            pedidos_view.deletar_pedido()
         elif opcao == "5":
             break
         else:
@@ -160,4 +190,6 @@ def exibir_relatorios():
 
 # Inicia o menu principal
 if __name__ == "__main__":
+    initialize_database(drop_if_exists=True)
+    splash_screen()
     exibir_menu_principal()
