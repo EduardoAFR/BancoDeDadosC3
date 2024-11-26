@@ -1,20 +1,20 @@
-# controllers/pedidos_controller.py
 from models.pedidos import Pedido
-from bson.objectid import ObjectId
 
-class PedidosController:
+class PedidoController:
+    
     @staticmethod
     def listar_pedidos():
         return Pedido.listar_pedidos()
 
     @staticmethod
-    def criar_pedido(cliente, livros, total):
-        return Pedido.criar_pedido(cliente, livros, total)
+    def criar_pedido(id_pedido, livro_id, quantidade, data_pedido=None):
+        return Pedido.criar_pedido(id_pedido, livro_id, quantidade, data_pedido)
 
     @staticmethod
-    def atualizar_pedido(id_pedido, novos_dados):
-        return Pedido.atualizar_pedido(ObjectId(id_pedido), novos_dados)
+    def atualizar_pedido(id_pedido, livro_id=None, quantidade=None, data_pedido=None):
+        # Passa os parâmetros diretamente para o model
+        return Pedido.atualizar_pedido(id_pedido, livro_id, quantidade, data_pedido)
 
     @staticmethod
     def deletar_pedido(id_pedido):
-        return Pedido.deletar_pedido(ObjectId(id_pedido))
+        return Pedido.deletar_pedido(id_pedido)
