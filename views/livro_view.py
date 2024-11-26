@@ -67,33 +67,34 @@ def deletar_livro():
         if not livros:
             print("Não há livros para excluir.")
             return  # Se não houver livros, retorna ao menu anterior
-        
+
         # Listando os livros para o usuário escolher
         print("\nLista de Livros:")
         for i, livro in enumerate(livros, 1):
             print(f"{i}. Título: {livro['titulo']}, Autor: {livro['autor']}, Gênero: {livro['genero']}")
-        
+
         try:
             # Seleção do livro a ser deletado
             opcao = int(input("\nEscolha o número do livro que deseja excluir: ")) - 1
             livro = livros[opcao]
             print(f"\nVocê selecionou o livro:\nTítulo: {livro['titulo']}, Autor: {livro['autor']}, Gênero: {livro['genero']}")
-            
+
             # Confirmando a exclusão
             confirmacao = input("\nDeseja realmente excluir este livro? (Sim/Não): ").strip().lower()
             if confirmacao != 'sim':
                 print("Livro não excluído. Retornando ao menu de livros.")
                 return  # Caso o usuário desista, volta ao menu de livros
 
-            # Verificando se o livro está sendo referenciado em algum pedido
-            excluido = LivroController.deletar_livro(livro['id_livro'])
-            
+            # Chamar exclusão
+            excluido = LivroController.deletar_livro(livro["id_livro"])
+
+            # Validar exclusão
             if excluido["sucesso"]:
-                print(f"Pedido ID {livro['id_livro']} excluído com sucesso!")
+                print(f"Livro '{livro['titulo']}' excluído com sucesso!")
             else:
                 print(f"Erro ao tentar excluir o livro: {excluido['mensagem']}")
 
-            # Pergunta se deseja excluir mais algum livro
+            # Perguntar se deseja excluir outro livro
             excluir_mais = input("\nDeseja excluir mais algum livro? (Sim/Não): ").strip().lower()
             if excluir_mais != 'sim':
                 print("Voltando ao menu de livros...")
