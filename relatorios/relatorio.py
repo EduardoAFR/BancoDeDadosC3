@@ -1,20 +1,17 @@
 # relatorios.py
 from connection.connection import conectar
-from bson.son import SON
 
 def relatorio_todos_autores_com_pedidos():
     db = conectar()
     autores_collection = db["autores"]
-    livros_collection = db["livros"]
-    pedidos_collection = db["pedidos"]
 
-    # Using MongoDB's aggregation framework to perform a left join-like operation
+    # Pipeline para agregar autores, livros e pedidos
     pipeline = [
         {
             "$lookup": {
                 "from": "livros",
-                "localField": "_id",
-                "foreignField": "id_autor",
+                "localField": "IdAutor",  # Campo usado na coleção autores
+                "foreignField": "autor",  # Campo usado na coleção livros
                 "as": "livros_info"
             }
         },
@@ -27,8 +24,8 @@ def relatorio_todos_autores_com_pedidos():
         {
             "$lookup": {
                 "from": "pedidos",
-                "localField": "livros_info._id",
-                "foreignField": "id_livro",
+                "localField": "livros_info.id_livro",
+                "foreignField": "livro",
                 "as": "pedidos_info"
             }
         },
@@ -40,8 +37,8 @@ def relatorio_todos_autores_com_pedidos():
         },
         {
             "$group": {
-                "_id": "$nome_autor",
-                "total_quantidade": {"$sum": {"$ifNull": ["$pedidos_info.quantidade", 0]}}
+                "_id": "$nome",  # Nome do autor
+                "total_quantidade": {"$sum": {"$ifNull": ["$pedidos_info.quantidade", 0]}},
             }
         },
         {
@@ -52,40 +49,46 @@ def relatorio_todos_autores_com_pedidos():
     resultados = list(autores_collection.aggregate(pipeline))
     return resultados
 
+
 def relatorio_pedidos_por_genero():
     db = conectar()
-    livros_collection = db["livros"]
     pedidos_collection = db["pedidos"]
-    generos_collection = db["generos"]
 
-    # Using aggregation to join and group data by genre
+
+    # Pipeline para agregar pedidos por gênero
     pipeline = [
         {
             "$lookup": {
                 "from": "livros",
-                "localField": "id_livro",
-                "foreignField": "_id",
+                "localField": "livro",  # Campo na coleção pedidos
+                "foreignField": "id_livro",  # Campo na coleção livros
                 "as": "livros_info"
             }
         },
         {
-            "$unwind": "$livros_info"
+            "$unwind": {
+                "path": "$livros_info",
+                "preserveNullAndEmptyArrays": False
+            }
         },
         {
             "$lookup": {
                 "from": "generos",
-                "localField": "livros_info.id_genero",
-                "foreignField": "_id",
+                "localField": "livros_info.genero",  # Campo na coleção livros
+                "foreignField": "IdGenero",  # Campo na coleção gêneros
                 "as": "genero_info"
             }
         },
         {
-            "$unwind": "$genero_info"
+            "$unwind": {
+                "path": "$genero_info",
+                "preserveNullAndEmptyArrays": False
+            }
         },
         {
             "$group": {
-                "_id": "$genero_info.nome_genero",
-                "total_quantidade": {"$sum": "$quantidade"}
+                "_id": "$genero_info.nome",  # Nome do gênero
+                "total_quantidade": {"$sum": "$quantidade"}  # Soma das quantidades de pedidos
             }
         },
         {
