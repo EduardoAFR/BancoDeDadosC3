@@ -49,8 +49,6 @@ def atualizar_autor():
     else:
         print(f"Nenhum autor encontrado com ID {id_autor}.")
 
-# main.py ou onde o menu de autores está implementado
-
 def deletar_autor():
     while True:
         # Listando todos os autores
